@@ -1,21 +1,29 @@
 <?php
 /**
- * Plugin Name:     Sampleplugin
+ * Plugin Name:     Sample CLI plugin
  * Plugin URI:      PLUGIN SITE HERE
  * Description:     PLUGIN DESCRIPTION HERE
- * Author:          YOUR NAME HERE
- * Author URI:      YOUR SITE HERE
- * Text Domain:     sampleplugin
+ * Author:          Anam
+ * Author URI:      https://anam.rocks
+ * Text Domain:     samplecliplugin
  * Domain Path:     /languages
  * Version:         0.1.0
  *
- * @package         Sampleplugin
+ * @package         Samplecliplugin
  */
 class ANAM_CLI{
-    public function hello_world(){
+    public function messages(){
         WP_CLI::line('Hello World');
+		WP_CLI::success('Success.');
     }
-    public function generate_posts_progress_bar( $args, $assoc_args ) {
+	/**
+	 * Generate progress bar
+	 *
+	 * @param [type] $args 
+	 * @param [type] $assoc_args
+	 * @return void
+	 */
+    public function generate_posts_with_progress_bar( $args, $assoc_args ) {
 
         $desired_posts_to_generate = (int) $args[0];
       
@@ -59,11 +67,12 @@ class ANAM_CLI{
         $progress->finish();
         WP_CLI::success( $desired_posts_to_generate. ' posts generated!' ); // Prepends Success to message
     }
-    public function anam_cli_delete_single_post( $args, $assoc_args ){
-        
+    public function delete_single_post( $args, $assoc_args ){
+        WP_CLI::line('Delete in progress.');
+        WP_CLI::success('Noting deleted.');
     }
 }
 function anam_cli_register_command(){
-    WP_CLI::add_command('anam', 'ANAM_CLI');
+    WP_CLI::add_command('l1', 'ANAM_CLI');
 }
 add_action('cli_init', 'anam_cli_register_command');
