@@ -11,68 +11,124 @@
  *
  * @package         Samplecliplugin
  */
-class ANAM_CLI{
-    public function messages(){
-        WP_CLI::line('Hello World');
-		WP_CLI::success('Success.');
-    }
+
+ if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+final class SAMPLE_CLI_PLUGIN {
+
 	/**
-	 * Generate progress bar
+	 * plugin version
+	 */
+	const SAMPLE_CLI_PLUGIN_VERSION = '1.0';
+	/**
+	 * construction of this plugin
+	 */
+	private function __construct() {
+		$this->define_constants();
+		register_activation_hook( __FILE__, array( $this, 'activate' ) );
+		add_action( 'plugins_loaded', array( $this, 'load_plugin_resources' ) );
+		// add_action('cli_init', array( $this, 'anam_cli_register_command' ));
+	}
+	/**
+	 * Initialize the plugin
 	 *
-	 * @param [type] $args 
-	 * @param [type] $assoc_args
 	 * @return void
 	 */
-    public function generate_posts_with_progress_bar( $args, $assoc_args ) {
+	public static function init() {
+		static $instance = false;
+		if ( ! $instance ) {
+			$instance = new self();
+		}
+		return $instance;
+	}
+	/**
+	 * Load plugin text domain
+	 *
+	 * @return void
+	 */
+	public function load_text_domain() {
+		load_plugin_textdomain( 'sample-cli-plugin' );
+	}
+	/**
+	 * define plugin
+	 * default constants
+	 *
+	 * @return void
+	 */
+	public function define_constants() {
+		/**
+		 * return plugin version
+		 */
+		define( 'SAMPLE_CLI_PLUGIN_VERSION', self::SAMPLE_CLI_PLUGIN_VERSION );
+		/**
+		 * return the main file name
+		 * C:\xampp\htdocs\devplugin\wp-content\plugins\gutenberg-starter\gutenberg-starter.php
+		 */
+		define( 'SAMPLE_CLI_PLUGIN_FILE', __FILE__ );
+		/**
+		 * return the plugin director
+		 * C:\xampp\htdocs\devplugin\wp-content\plugins\gutenberg-starter
+		 */
+		define( 'SAMPLE_CLI_PLUGIN_PATH', __DIR__ );
+		/**
+		 * return the plugin directory with host
+		 * http://localhost/devplugin/wp-content/plugins/gutenberg-starter
+		 */
+		define( 'SAMPLE_CLI_PLUGIN_URL', plugins_url( '', SAMPLE_CLI_PLUGIN_FILE ) );
+		define( 'SAMPLE_CLI_PLUGIN_DIR_URL', plugin_dir_url( __FILE__ ) );
+		/**
+		 * return the asset folder director
+		 * http://localhost/devplugin/wp-content/plugins/gutenberg-starter/assets
+		 */
+		define( 'SAMPLE_CLI_PLUGIN_ASSETS', SAMPLE_CLI_PLUGIN_URL . '/build' );
+		define( 'SAMPLE_CLI_PLUGIN_DIR_ASSETS', SAMPLE_CLI_PLUGIN_DIR_URL . 'build' );
 
-        $desired_posts_to_generate = (int) $args[0];
-      
-        $progress = \WP_CLI\Utils\make_progress_bar( 'Generating Posts', $desired_posts_to_generate );
-      
-        for ( $i = 0; $i < $desired_posts_to_generate; $i++ ) {
-          // Code used to generate a post.
-          $progress->tick();
-        }
-      
-        $progress->finish();
-      
-    }
-    public function generate_posts( $args, $assoc_args ) {
+	}
+	/**
+	 * add installation time
+	 * and plugin version
+	 * while active the plugin
+	 *
+	 * @return void
+	 */
+	public function activate() {
+		if ( ! get_option( 'sample_cli_plugin_installed' ) ) {
+			update_option( 'sample_cli_plugin_installed', time() );
+		}
+		update_option( 'sample_cli_plugin_version', SAMPLE_CLI_PLUGIN_VERSION );
+	}
+	/**
+	 * Load plugin resources
+	 *
+	 * @return void
+	 */
+	public function load_plugin_resources() {
+		// new Anam\SimpleCLIPlugin\Level_One();
+		if (!defined('WP_CLI') || !WP_CLI || !class_exists('\WP_CLI')) {
+			return;
+		}
+		$level_one = new Anam\SimpleCLIPlugin\Level_One();
+		\WP_CLI::add_command('l1', $level_one );
+		$level_two = new Anam\SimpleCLIPlugin\Level_Two();
+		\WP_CLI::add_command('l2', $level_two );
+		
+	}
+	
+}
 
-        // Get Post Details.
-        $desired_posts_to_generate = (int) $args[0]; // First argument is how many posts should be generated.
-        $title_prepend = $args[1]; // Second argument should be the title of posts generated. This will be used with index in loop to generate a title.
-        $author_id = (int) $args[2]; // Id of author who to assign generated post to.
-      
-        $progress = \WP_CLI\Utils\make_progress_bar( 'Generating Posts', $desired_posts_to_generate );
-      
-        for ( $i = 0; $i < $desired_posts_to_generate; $i++ ) {
-      
-          // Code used to generate a post.
-          $my_post = array(
-            'post_title'  => $title_prepend . ' ' . ($i + 1),
-            'post_status' => 'publish',
-            'post_author' => $author_id,
-            'post_type'   => 'post',
-            'tags_input'  => [ 'generated' ],
-            'meta_input'  => $assoc_args, // Simply passes all key value pairs to posts generated that can be used in testing.
-          );
-      
-          // Insert the post into the database.
-          wp_insert_post( $my_post );
-      
-          $progress->tick();
-        }
-      
-        $progress->finish();
-        WP_CLI::success( $desired_posts_to_generate. ' posts generated!' ); // Prepends Success to message
-    }
-    public function delete_single_post( $args, $assoc_args ){
-        WP_CLI::line('Delete in progress.');
-        WP_CLI::success('Noting deleted.');
-    }
+/**
+ * Initilize the main plugin
+ *
+ * @return \SAMPLE_CLI_PLUGIN
+ */
+function sample_cli_plugin() {
+	 return SAMPLE_CLI_PLUGIN::init();
 }
-function anam_cli_register_command(){
-    WP_CLI::add_command('l1', 'ANAM_CLI');
-}
-add_action('cli_init', 'anam_cli_register_command');
+/**
+ * kick start the plugin
+ */
+sample_cli_plugin();

@@ -1,0 +1,24 @@
+{
+  "name": "theanamhossain/simple-cli-plugin",
+  "description": "WP cli custom commands",
+  "type": "wordpress-plugin",
+  "license": "GPLv3",
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Anam\\SimpleCLIPlugin\\": "inc/"
+    },
+    "files": []
+  },
+  "config": {
+    "platform": {
+      "php": "8.0.0"
+    }
+  },
+  "authors": [
+    {
+      "name": "anamwp",
+      "email": "theanamhossain@gmail.com"
+    }
+  ]
+}
