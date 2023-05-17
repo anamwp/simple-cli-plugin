@@ -24,10 +24,18 @@ final class SIMPLE_CLI_PLUGIN {
 	 * plugin version
 	 */
 	const SIMPLE_CLI_PLUGIN_VERSION = '1.0';
+	/**
+	 * Level one command store variable
+	 *
+	 * @var [type]
+	 */
 	private $level_one;
+	/**
+	 * Level two command store variable
+	 *
+	 * @var [type]
+	 */
 	private $level_two;
-	// private $level_one;
-	// private $level_one;
 	/**
 	 * construction of this plugin
 	 */
@@ -93,7 +101,7 @@ final class SIMPLE_CLI_PLUGIN {
 
 	}
 	/**
-	 * add installation time
+	 * Add installation time
 	 * and plugin version
 	 * while active the plugin
 	 *
@@ -111,16 +119,28 @@ final class SIMPLE_CLI_PLUGIN {
 	 * @return void
 	 */
 	public function load_plugin_resources() {
-		// new Anam\SimpleCLIPlugin\Level_One();
+		/**
+		 * Check WP_CLI
+		 */
 		if (!defined('WP_CLI') || !WP_CLI || !class_exists('\WP_CLI')) {
 			return;
 		}
 		$this->level_one = new Anam\SimpleCLIPlugin\Level_One();
-		// \WP_CLI::add_command('l1', $level_one );
 		$this->level_two = new Anam\SimpleCLIPlugin\Level_Two();
+		/**
+		 * Another way to register custom command from class
+		 */
+		// $level_one = new Anam\SimpleCLIPlugin\Level_One();
+		// \WP_CLI::add_command('l1', $level_one );
+		// $level_two = new Anam\SimpleCLIPlugin\Level_Two();
 		// \WP_CLI::add_command('l2', $level_two );
 		
 	}
+	/**
+	 * Register custom command
+	 *
+	 * @return void
+	 */
 	public function anam_cli_register_command(){
 		\WP_CLI::add_command('l1', $this->level_one );
 		\WP_CLI::add_command('l2', $this->level_two );

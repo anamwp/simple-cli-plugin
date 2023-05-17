@@ -4,7 +4,7 @@ namespace Anam\SimpleCLIPlugin;
 class Level_One{
 
     public function messages(){
-        \WP_CLI::line('Hello World');
+      	\WP_CLI::line('Hello World');
 		\WP_CLI::success('Success.');
     }
 	public function user_lists(){
